@@ -3,7 +3,7 @@
 https://imirrors.quickso.cn/
 
 ### 技术栈:
-操作系统：Centos8  
+操作系统：Centos8/Debian12  
 镜像同步：[tunasync](https://github.com/tuna/tunasync)  
 Web服务：[Caddy](https://caddyserver.com/)
 
@@ -47,3 +47,10 @@ https://blog.quickso.cn/2025/01/03/%E4%BD%BF%E7%94%A8tunasync%E6%90%AD%E5%BB%BA%
 
 
 
+### 定时任务 crontab -e
+
+```
+*/1 * * * * wget -q http://127.0.0.1:12345/jobs -O /home/www/mirrors/jobs.json -o /home/www/mirrors/logs/wget.log
+* * * * * /home/www/mirrors/status/update_rrd.sh
+*/5 * * * * wget -O /home/www/mirrors/isoinfo.json https://mirrors.tuna.tsinghua.edu.cn/static/status/isoinfo.json
+```
