@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Quick Mirror</title>
+  <meta name="description" content="快点开源软件镜像站，致力于为国内用户提供高质量的开源软件镜像、Linux 镜像源服务，帮助用户更方便地获取开源软件。本镜像站由HuanGeTech负责运行维护。">
+  <meta name="keywords" content="镜像站,镜像源,Linux,软件源,开源">
+  <meta name="author" content="HuanGeTech">
+  <style>
+    :root {
+      --success: #4caf50;
+      --syncing: #ffc107;
+      --failed: #f44336;
+      --unknown: #9e9e9e;
+      --primary: #2196f3;
+      --hover-bg: #f8f9fa;
+    }
+
+    body {
+      font-family: "Segoe UI", Arial, sans-serif;
+      margin: 0;
+      background-color: #f5f5f5;
+      min-height: 100vh;
+    }
+
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 2rem;
+    }
+
+    h1 {
+      text-align: center;
+      color: #333;
+      margin-bottom: 2rem;
+      font-size: clamp(1.5rem, 5vw, 2.5rem);
+      position: relative;
+      padding-bottom: 1rem;
+    }
+
+    h1::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 60px;
+      height: 3px;
+      background: var(--primary);
+      border-radius: 3px;
+    }
+
+    .mirror-list {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+      gap: 1.5rem;
+      margin-bottom: 3rem;
+    }
+
+    .mirror-card {
+        background: white;
+        border-radius: 12px;
+        padding: 1.5rem;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+        transition: all 0.3s ease;
+        border: 1px solid transparent;
+      }
+    .mirror-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+      border-color: var(--primary);
+    }
+
+    .mirror-header {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: 0.5rem;
+      flex-wrap: wrap;
+    }
+
+    .mirror-name {
+      font-size: clamp(1.1rem, 4vw, 1.5rem);
+      font-weight: 600;
+      color: #333;
+      flex: 1;
+      min-width: 150px;
+      word-break: break-all;
+      text-decoration: none;
+      transition: color 0.2s ease;
+    }
+
+    .mirror-name:hover {
+      color: var(--primary);
+    }
+
+    .status {
+      display: inline-block;
+      padding: 0.3rem 1rem;
+      border-radius: 20px;
+      font-size: 0.9em;
+      white-space: nowrap;
+      font-weight: 500;
+      transition: transform 0.2s ease;
+    }
+
+    .status:hover {
+      transform: scale(1.05);
+    }
+
+    .status.success {
+      background: var(--success);
+      color: white;
+    }
+
+    .status.syncing {
+      background: var(--syncing);
+      color: black;
+    }
+
+    .status.failed {
+      background: var(--failed);
+      color: white;
+    }
+
+    .detail-item {
+      margin: 0.5rem 0;
+      display: flex;
+      justify-content: space-between;
+      gap: 1rem;
+      padding: 0.5rem;
+      border-radius: 6px;
+      transition: background-color 0.2s ease;
+    }
+
+    .detail-item:hover {
+      background-color: var(--hover-bg);
+    }
+
+    .detail-label {
+      color: #666;
+      font-size: 0.95em;
+      min-width: 80px;
+      font-weight: 500;
+    }
+
+    .detail-value {
+      color: #333;
+      text-align: right;
+      flex: 1;
+      word-break: break-all;
+      font-size: 0.95em;
+    }
+
+    .upstream-link {
+      display: inline-block;
+      max-width: 100%;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      color: var(--primary);
+      text-decoration: none;
+      font-size: 0.95em;
+      transition: color 0.2s ease;
+    }
+
+    .upstream-link:hover {
+      text-decoration: underline;
+      color: #1976d2;
+    }
+
+    .timestamp {
+      font-family: monospace;
+      font-size: 0.9em;
+      color: #555;
+    }
+
+    .footer {
+      margin-top: 3rem;
+      text-align: center;
+      font-size: 0.95em;
+      color: #666;
+      padding: 2rem 0;
+      border-top: 1px solid #eee;
+    }
+
+    .footer p {
+      margin: 0.5rem 0;
+    }
+
+    @media (max-width: 480px) {
+      .container {
+        padding: 1rem;
+      }
+
+      .mirror-list {
+        grid-template-columns: 1fr;
+      }
+
+      .mirror-card {
+        padding: 1rem;
+      }
+
+      .detail-item {
+        flex-direction: column;
+        gap: 0.25rem;
+      }
+
+      .detail-value {
+        text-align: left;
+      }
+
+      .status {
+        padding: 0.2rem 0.5rem;
+        font-size: 0.8em;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <h1>QuickMirrors</h1>
+    <div class="mirror-list" id="mirrorContainer"></div>
+    <div class="footer">
+      <p class="text-center thuhidden">本镜像站为学生、技术爱好者、工程师、科研人员等开源爱好者提供开源软件镜像服务.</p>
+      <p class="text-center thuhidden">根据相关法律法规，本站不对欧盟用户提供服务。</p>
+      <p class="text-center thuhidden">
+        本站由HuanGeTech运行维护。
+      </p>
+    </div>
+  </div>
+
+  <script>
+    // 时间格式化函数
+    const formatTime = (timestamp) => {
+      if (timestamp <= 0) return "N/A";
+
+      const date = new Date(timestamp * 1000);
+      return (
+        date.toLocaleString("zh-CN", {
+          year: "numeric",
+          month: "2-digit",
+          day: "2-digit",
+          hour: "2-digit",
+          minute: "2-digit",
+          timeZone: "UTC",
+        }) + " UTC"
+      );
+    };
+
+    // 创建卡片元素
+    const createMirrorCard = (mirror) => {
+      const card = document.createElement("div");
+      card.className = "mirror-card";
+
+      // 头部信息
+      const header = document.createElement("div");
+      header.className = "mirror-header";
+
+      // 镜像名称（可点击链接）
+      const name = document.createElement("a"); // 改为 <a> 标签
+      name.className = "mirror-name";
+      name.href = `/${mirror.name}`; // 指向镜像目录
+      name.textContent = mirror.name;
+      name.target = "_blank"; // 在新标签页打开
+      header.appendChild(name);
+
+      // 状态标签
+      const status = document.createElement("div");
+      status.className = `status ${mirror.status}`;
+      status.textContent = mirror.status.toUpperCase();
+      header.appendChild(status);
+
+      card.appendChild(header);
+
+      // 详细信息
+      const createDetailItem = (label, value) => {
+        const div = document.createElement("div");
+        div.className = "detail-item";
+        div.innerHTML = `
+                    <span class="detail-label">${label}</span>
+                    <span class="detail-value">${value}</span>
+                `;
+        return div;
+      };
+
+      // 上游地址处理
+      const upstreamDisplay = mirror.upstream.startsWith("http")
+        ? `<a class="upstream-link" href="${mirror.upstream}" target="_blank" title="${mirror.upstream}">${mirror.upstream}</a>`
+        : `<span class="upstream-link" title="${mirror.upstream}">${mirror.upstream}</span>`;
+
+      card.appendChild(
+        createDetailItem(
+          "数据大小",
+          mirror.size === "unknown" ? "未知" : mirror.size
+        )
+      );
+      card.appendChild(createDetailItem("上游地址", upstreamDisplay));
+      card.appendChild(
+        createDetailItem(
+          "最后同步",
+          `<span class="timestamp">${formatTime(mirror.last_ended_ts)}</span>`
+        )
+      );
+      card.appendChild(
+        createDetailItem(
+          "下次计划",
+          `<span class="timestamp">${formatTime(
+            mirror.next_schedule_ts
+          )}</span>`
+        )
+      );
+
+      return card;
+    };
+
+    // 获取并更新数据
+    const updateData = async () => {
+      try {
+        const response = await fetch("jobs.json");
+        const data = await response.json();
+
+        const container = document.getElementById("mirrorContainer");
+        container.innerHTML = "";
+        data.forEach((mirror) => {
+          container.appendChild(createMirrorCard(mirror));
+        });
+      } catch (error) {
+        console.error("数据加载失败:", error);
+      }
+    };
+
+    // 初始加载
+    updateData();
+    // 每30秒自动刷新
+    setInterval(updateData, 30000);
+  </script>
+</body>
+
+</html>
