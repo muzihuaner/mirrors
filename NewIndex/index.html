@@ -244,24 +244,6 @@
         padding-bottom: 0.5rem;
         margin-bottom: 1.5rem;
       }
-
-      .iso-list {
-        list-style-type: none;
-        padding-left: 0;
-      }
-
-      .iso-list li {
-        margin-bottom: 0.5rem;
-      }
-
-      .iso-list a {
-        text-decoration: none;
-        color: #2980b9;
-      }
-
-      .iso-list a:hover {
-        text-decoration: underline;
-      }
       .nav-link{
         font-size: larger;
         color: #333;
@@ -274,30 +256,112 @@
     <div class="container">
       <h1>QuickMirrors</h1>
       <div class="mirror-list" id="mirrorContainer"></div>
-      <div class="container">
-        <h1 class="my-4">资源列表</h1>
-
-        <!-- 操作系统 Section -->
-        <div class="category-section">
-          <h2>操作系统</h2>
-          <ul id="osList" class="nav nav-tabs" role="tablist"></ul>
-          <div id="osContent" class="tab-content"></div>
+     
+      <div class="download-link">
+        <p class="text-center">常用开源Linux发行版 ISO 和应用软件安装包下载</p>
+        <!-- 触发模态框的按钮 -->
+        <div class="text-center mt-2">
+            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#isoModal">
+                获取安装镜像
+            </button>
         </div>
+        <!-- 模态框 -->
+        <div class="modal fade" id="isoModal" tabindex="-1" aria-labelledby="isoModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <!-- 模态框头部 -->
+                    <div class="modal-header">
+                        <h4 class="modal-title" id="isoModalLabel">下载</h4>
+                    </div>
 
-        <!-- 应用软件 Section -->
-        <div class="category-section">
-          <h2>应用软件</h2>
-          <ul id="appList" class="nav nav-tabs" role="tablist"></ul>
-          <div id="appContent" class="tab-content"></div>
-        </div>
+                    <!-- 模态框主体 -->
+                    <div class="modal-body">
+                        <!-- 选项卡 -->
+                        <ul class="nav nav-tabs mb-3" id="isoTabs" role="tablist">
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link active" id="os-tab" data-bs-toggle="tab"
+                                    data-bs-target="#os" type="button" role="tab" aria-controls="os"
+                                    aria-selected="true">操作系统</button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="app-tab" data-bs-toggle="tab" data-bs-target="#app"
+                                    type="button" role="tab" aria-controls="app"
+                                    aria-selected="false">应用软件</button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="font-tab" data-bs-toggle="tab"
+                                    data-bs-target="#font" type="button" role="tab" aria-controls="font"
+                                    aria-selected="false">字体</button>
+                            </li>
+                        </ul>
 
-        <!-- 字体 Section -->
-        <div class="category-section">
-          <h2>字体</h2>
-          <ul id="fontList" class="nav nav-tabs" role="tablist"></ul>
-          <div id="fontContent" class="tab-content"></div>
+                        <!-- 选项卡内容 -->
+                        <div class="tab-content" id="isoTabsContent">
+                            <!-- 操作系统选项卡 -->
+                            <div class="tab-pane fade show active" id="os" role="tabpanel"
+                                aria-labelledby="os-tab">
+                                <div class="row">
+                                    <!-- 左侧导航栏 -->
+                                    <div class="col-lg-3">
+                                        <ul class="nav nav-pills flex-column" id="osList" role="tablist">
+                                            <!-- 操作系统列表将通过 JavaScript 动态加载 -->
+                                        </ul>
+                                    </div>
+
+                                    <!-- 右侧内容 -->
+                                    <div class="col-lg-9">
+                                        <div class="tab-content" id="osContent">
+                                            <!-- 操作系统内容将通过 JavaScript 动态加载 -->
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- 应用软件选项卡 -->
+                            <div class="tab-pane fade" id="app" role="tabpanel" aria-labelledby="app-tab">
+                                <div class="row">
+                                    <!-- 左侧导航栏 -->
+                                    <div class="col-lg-3">
+                                        <ul class="nav nav-pills flex-column" id="appList" role="tablist">
+                                            <!-- 应用软件列表将通过 JavaScript 动态加载 -->
+                                        </ul>
+                                    </div>
+
+                                    <!-- 右侧内容 -->
+                                    <div class="col-lg-9">
+                                        <div class="tab-content" id="appContent">
+                                            <!-- 应用软件内容将通过 JavaScript 动态加载 -->
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- 字体选项卡 -->
+                            <div class="tab-pane fade" id="font" role="tabpanel" aria-labelledby="font-tab">
+                                <div class="row">
+                                    <!-- 左侧导航栏 -->
+                                    <div class="col-lg-3">
+                                        <ul class="nav nav-pills flex-column" id="fontList" role="tablist">
+                                            <!-- 字体列表将通过 JavaScript 动态加载 -->
+                                        </ul>
+                                    </div>
+
+                                    <!-- 右侧内容 -->
+                                    <div class="col-lg-9">
+                                        <div class="tab-content" id="fontContent">
+                                            <!-- 字体内容将通过 JavaScript 动态加载 -->
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                   
+                </div>
+            </div>
         </div>
-      </div>
+    </div>
       
       <div class="footer">
         <ul class="nav justify-content-center">
@@ -443,129 +507,115 @@
       setInterval(updateData, 30000);
     </script>
     <script>
-      document.addEventListener("DOMContentLoaded", function () {
-        // 获取 DOM 元素
-        const osList = document.getElementById("osList");
-        const osContent = document.getElementById("osContent");
-        const appList = document.getElementById("appList");
-        const appContent = document.getElementById("appContent");
-        const fontList = document.getElementById("fontList");
-        const fontContent = document.getElementById("fontContent");
+      document.addEventListener('DOMContentLoaded', function () {
+          // 获取 DOM 元素
+          const osList = document.getElementById('osList');
+          const osContent = document.getElementById('osContent');
+          const appList = document.getElementById('appList');
+          const appContent = document.getElementById('appContent');
+          const fontList = document.getElementById('fontList');
+          const fontContent = document.getElementById('fontContent');
 
-        // 从 isoinfo.json 获取数据
-        fetch("isoinfo.json")
-          .then((response) => response.json())
-          .then((data) => {
-            // 按分类分组
-            const categories = {
-              os: [],
-              app: [],
-              font: [],
-            };
+          // 从 isoinfo.json 获取数据
+          fetch('isoinfo.json')
+              .then(response => response.json())
+              .then(data => {
+                  // 按分类分组
+                  const categories = {
+                      os: [],
+                      app: [],
+                      font: []
+                  };
 
-            data.forEach((item) => {
-              if (categories[item.category]) {
-                categories[item.category].push(item);
+                  data.forEach(item => {
+                      if (categories[item.category]) {
+                          categories[item.category].push(item);
+                      }
+                  });
+
+                  // 按字母顺序排序
+                  categories.os.sort((a, b) => a.distro.localeCompare(b.distro));
+                  categories.app.sort((a, b) => a.distro.localeCompare(b.distro));
+                  categories.font.sort((a, b) => a.distro.localeCompare(b.distro));
+
+                  // 动态生成操作系统导航栏和内容
+                  generateCategoryContent(categories.os, osList, osContent, 'os');
+                  // 动态生成应用软件导航栏和内容
+                  generateCategoryContent(categories.app, appList, appContent, 'app');
+                  // 动态生成字体导航栏和内容
+                  generateCategoryContent(categories.font, fontList, fontContent, 'font');
+              })
+              .catch(error => {
+                  console.error('Error fetching isoinfo.json:', error);
+                  osContent.innerHTML = '<p>无法加载数据，请稍后重试。</p>';
+              });
+
+          /**
+           * 动态生成分类内容
+           * @param {Array} data - 分类数据
+           * @param {HTMLElement} navList - 导航栏容器
+           * @param {HTMLElement} content - 内容容器
+           * @param {string} prefix - 分类前缀（os、app、font）
+           */
+          function generateCategoryContent(data, navList, content, prefix) {
+              if (data.length === 0) {
+                  content.innerHTML = `<p>暂无${prefix === 'os' ? '操作系统' : prefix === 'app' ? '应用软件' : '字体'}数据。</p>`;
+                  return;
               }
-            });
 
-            // 按字母顺序排序
-            categories.os.sort((a, b) => a.distro.localeCompare(b.distro));
-            categories.app.sort((a, b) => a.distro.localeCompare(b.distro));
-            categories.font.sort((a, b) => a.distro.localeCompare(b.distro));
+              data.forEach((item, index) => {
+                  // 生成导航栏
+                  const navItem = document.createElement('li');
+                  navItem.classList.add('nav-item');
+                  navItem.setAttribute('role', 'presentation');
 
-            // 动态生成操作系统导航栏和内容
-            generateCategoryContent(categories.os, osList, osContent, "os");
-            // 动态生成应用软件导航栏和内容
-            generateCategoryContent(categories.app, appList, appContent, "app");
-            // 动态生成字体导航栏和内容
-            generateCategoryContent(
-              categories.font,
-              fontList,
-              fontContent,
-              "font"
-            );
-          })
-          .catch((error) => {
-            console.error("Error fetching isoinfo.json:", error);
-            osContent.innerHTML = "<p>无法加载数据，请稍后重试。</p>";
-          });
+                  const navLink = document.createElement('button');
+                  navLink.classList.add('nav-link');
+                  navLink.id = `${prefix}-${index}-tab`;
+                  navLink.setAttribute('data-bs-toggle', 'pill');
+                  navLink.setAttribute('data-bs-target', `#${prefix}-${index}`);
+                  navLink.setAttribute('type', 'button');
+                  navLink.setAttribute('role', 'tab');
+                  navLink.setAttribute('aria-controls', `${prefix}-${index}`);
+                  navLink.setAttribute('aria-selected', index === 0 ? 'true' : 'false');
+                  navLink.textContent = item.distro;
 
-        /**
-         * 动态生成分类内容
-         * @param {Array} data - 分类数据
-         * @param {HTMLElement} navList - 导航栏容器
-         * @param {HTMLElement} content - 内容容器
-         * @param {string} prefix - 分类前缀（os、app、font）
-         */
-        function generateCategoryContent(data, navList, content, prefix) {
-          if (data.length === 0) {
-            content.innerHTML = `<p>暂无${
-              prefix === "os"
-                ? "操作系统"
-                : prefix === "app"
-                ? "应用软件"
-                : "字体"
-            }数据。</p>`;
-            return;
+                  navItem.appendChild(navLink);
+                  navList.appendChild(navItem);
+
+                  // 生成内容
+                  const tabPane = document.createElement('div');
+                  tabPane.classList.add('tab-pane', 'fade');
+                  tabPane.id = `${prefix}-${index}`;
+                  tabPane.setAttribute('role', 'tabpanel');
+                  tabPane.setAttribute('aria-labelledby', `${prefix}-${index}-tab`);
+
+                  const title = document.createElement('h3');
+                  title.textContent = item.distro;
+                  tabPane.appendChild(title);
+
+                  const isoList = document.createElement('ul');
+                  item.urls.forEach(iso => {
+                      const isoItem = document.createElement('li');
+                      const isoLink = document.createElement('a');
+                      isoLink.href = 'https://mirrors.tuna.tsinghua.edu.cn' + iso.url;
+                      isoLink.textContent = iso.name;
+                      isoItem.appendChild(isoLink);
+                      isoList.appendChild(isoItem);
+                  });
+                  tabPane.appendChild(isoList);
+
+                  content.appendChild(tabPane);
+
+                  // 默认激活第一个
+                  if (index === 0) {
+                      navLink.classList.add('active');
+                      tabPane.classList.add('show', 'active');
+                  }
+              });
           }
-
-          data.forEach((item, index) => {
-            // 生成导航栏
-            const navItem = document.createElement("li");
-            navItem.classList.add("nav-item");
-            navItem.setAttribute("role", "presentation");
-
-            const navLink = document.createElement("button");
-            navLink.classList.add("nav-link");
-            navLink.id = `${prefix}-${index}-tab`;
-            navLink.setAttribute("data-bs-toggle", "pill");
-            navLink.setAttribute("data-bs-target", `#${prefix}-${index}`);
-            navLink.setAttribute("type", "button");
-            navLink.setAttribute("role", "tab");
-            navLink.setAttribute("aria-controls", `${prefix}-${index}`);
-            navLink.setAttribute(
-              "aria-selected",
-              index === 0 ? "true" : "false"
-            );
-            navLink.textContent = item.distro;
-
-            navItem.appendChild(navLink);
-            navList.appendChild(navItem);
-
-            // 生成内容
-            const tabPane = document.createElement("div");
-            tabPane.classList.add("tab-pane", "fade");
-            tabPane.id = `${prefix}-${index}`;
-            tabPane.setAttribute("role", "tabpanel");
-            tabPane.setAttribute("aria-labelledby", `${prefix}-${index}-tab`);
-
-            const title = document.createElement("h3");
-            title.textContent = item.distro;
-            tabPane.appendChild(title);
-
-            const isoList = document.createElement("ul");
-            item.urls.forEach((iso) => {
-              const isoItem = document.createElement("li");
-              const isoLink = document.createElement("a");
-              isoLink.href = "https://mirrors.tuna.tsinghua.edu.cn" + iso.url;
-              isoLink.textContent = iso.name;
-              isoItem.appendChild(isoLink);
-              isoList.appendChild(isoItem);
-            });
-            tabPane.appendChild(isoList);
-
-            content.appendChild(tabPane);
-
-            // 默认激活第一个
-            if (index === 0) {
-              navLink.classList.add("active");
-              tabPane.classList.add("show", "active");
-            }
-          });
-        }
       });
-    </script>
+  </script>
 
     <!-- Bootstrap JS and dependencies -->
     <script src="https://cdn.jsdmirror.com/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
