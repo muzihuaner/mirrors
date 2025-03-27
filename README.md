@@ -1,6 +1,6 @@
 # Quick Mirror
 快点开源软件镜像站，致力于为国内用户提供高质量的开源软件镜像、Linux 镜像源服务，帮助用户更方便地获取开源软件。本镜像站由HuanGeTech负责运行维护。  
-https://imirrors.quickso.cn/
+https://mirror.quickso.cn/
 
 ### 技术栈:
 操作系统：Centos8/Debian12  
