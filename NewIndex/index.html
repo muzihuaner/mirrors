@@ -1,626 +1,818 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <!-- Bootstrap CSS -->
-    <link
-      href="https://cdn.jsdmirror.com/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
-      rel="stylesheet"
-    />
-    <title>Quick Mirror</title>
-    <meta
-      name="description"
-      content="快点开源软件镜像站，致力于为国内用户提供高质量的开源软件镜像、Linux 镜像源服务，帮助用户更方便地获取开源软件。本镜像站由HuanGeTech负责运行维护。"
-    />
-    <meta name="keywords" content="镜像站,镜像源,Linux,软件源,开源" />
-    <meta name="author" content="HuanGeTech" />
-    <style>
-      :root {
-        --success: #4caf50;
-        --syncing: #ffc107;
-        --failed: #f44336;
-        --unknown: #9e9e9e;
-        --primary: #2196f3;
-        --hover-bg: #f8f9fa;
-      }
 
-      body {
-        font-family: "Segoe UI", Arial, sans-serif;
-        margin: 0;
-        background-color: #f5f5f5;
-        min-height: 100vh;
-      }
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdmirror.com/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <title>Quick Mirror-快点开源软件镜像站</title>
+  <meta name="description" content="快点开源软件镜像站，致力于为国内用户提供高质量的开源软件镜像、Linux 镜像源服务，帮助用户更方便地获取开源软件。本镜像站由HuanGeTech负责运行维护。" />
+  <meta name="keywords" content="镜像站,镜像源,Linux,软件源,开源" />
+  <meta name="author" content="HuanGeTech" />
+  <style>
+    :root {
+      --success: #4caf50;
+      --syncing: #ffc107;
+      --failed: #f44336;
+      --unknown: #9e9e9e;
+      --primary: #2196f3;
+      --hover-bg: #f8f9fa;
+      --card-radius: 16px;
+      --card-shadow: 0 4px 16px rgba(33, 150, 243, 0.08);
+      --footer-bg: #f8f9fa;
+    }
 
+    body.dark {
+      background: #181a1b;
+      color: #e5e7eb;
+    }
+
+    body.dark .mirror-card,
+    body.dark .modal-content,
+    body.dark .category-section {
+      background: #23272a !important;
+      color: #e5e7eb;
+      border-color: #333 !important;
+    }
+
+    body.dark .mirror-name,
+    body.dark .detail-label,
+    body.dark .detail-value,
+    body.dark .timestamp,
+    body.dark .upstream-link {
+      color: #e5e7eb !important;
+    }
+
+    body.dark .mirror-name:hover {
+      color: #90caf9 !important;
+    }
+
+    body.dark .status.success,
+    body.dark .status.failed,
+    body.dark .status.unknown {
+      color: #fff !important;
+    }
+
+    body.dark .status.syncing {
+      color: #23272a !important;
+    }
+
+    body.dark .nav-link,
+    body.dark .nav-tabs .nav-link.active,
+    body.dark .nav-pills .nav-link,
+    body.dark .nav-pills .nav-link.active {
+      color: #e5e7eb !important;
+      background: none;
+    }
+
+    body.dark .nav-tabs .nav-link.active,
+    body.dark .nav-pills .nav-link.active {
+      background: #1976d2 !important;
+      color: #fff !important;
+    }
+
+    body.dark .tab-content>.tab-pane {
+      background: #23272a !important;
+      color: #e5e7eb;
+      border-color: #333 !important;
+    }
+
+    body.dark .footer {
+      background: #23272a;
+      color: #aaa;
+      border-top: 1px solid #333;
+    }
+
+    body.dark .footer .nav-link {
+      color: #90caf9 !important;
+    }
+
+    body.dark .footer .nav-link:hover {
+      color: #42a5f5 !important;
+    }
+
+    body {
+      font-family: "Segoe UI", Arial, sans-serif;
+      margin: 0;
+      background-color: #f5f5f5;
+      min-height: 100vh;
+    }
+
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 2rem;
+    }
+
+    h1 {
+      text-align: center;
+      color: #333;
+      margin-bottom: 2rem;
+      font-size: clamp(1.5rem, 5vw, 2.5rem);
+      position: relative;
+      padding-bottom: 1rem;
+    }
+
+    h1::after {
+      content: "";
+      position: absolute;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 60px;
+      height: 3px;
+      background: var(--primary);
+      border-radius: 3px;
+    }
+
+    .mirror-list {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+      gap: 1.5rem;
+      margin-bottom: 3rem;
+    }
+
+    .mirror-card {
+      background: white;
+      border-radius: var(--card-radius);
+      padding: 1.5rem 1.2rem;
+      box-shadow: var(--card-shadow);
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      transition: all 0.3s cubic-bezier(.4, 2, .3, 1);
+      border: 1px solid #e3eaf1;
+      position: relative;
+      min-height: 180px;
+    }
+
+    .mirror-card:hover {
+      transform: translateY(-4px) scale(1.02);
+      box-shadow: 0 8px 24px rgba(33, 150, 243, 0.16);
+      border-color: var(--primary);
+    }
+
+    .mirror-header {
+      display: flex;
+      align-items: center;
+      gap: 0.7rem;
+      margin-bottom: 0.2rem;
+    }
+
+    .mirror-icon {
+      font-size: 1.7rem;
+      color: var(--primary);
+      background: #e3f2fd;
+      border-radius: 50%;
+      width: 2.2rem;
+      height: 2.2rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .mirror-name {
+      font-size: 1.2rem;
+      font-weight: 600;
+      color: #333;
+      flex: 1;
+      min-width: 120px;
+      word-break: break-all;
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+
+    .mirror-name:hover {
+      color: var(--primary);
+    }
+
+    .status {
+      display: flex;
+      align-items: center;
+      gap: 0.3em;
+      padding: 0.3rem 0.9rem;
+      border-radius: 20px;
+      font-size: 0.95em;
+      font-weight: 500;
+      transition: transform 0.2s;
+    }
+
+    .status:hover {
+      transform: scale(1.05);
+    }
+
+    .status.success::before {
+      content: '✔';
+      margin-right: 0.3em;
+      color: #fff;
+    }
+
+    .status.syncing::before {
+      content: '⏳';
+      margin-right: 0.3em;
+      color: #000;
+    }
+
+    .status.failed::before {
+      content: '✖';
+      margin-right: 0.3em;
+      color: #fff;
+    }
+
+    .status.unknown::before {
+      content: '?';
+      margin-right: 0.3em;
+      color: #fff;
+    }
+
+    .status.success {
+      background: var(--success);
+      color: #fff;
+    }
+
+    .status.syncing {
+      background: var(--syncing);
+      color: #000;
+    }
+
+    .status.failed {
+      background: var(--failed);
+      color: #fff;
+    }
+
+    .status.unknown {
+      background: var(--unknown);
+      color: #fff;
+    }
+
+    .detail-item {
+      margin: 0.2rem 0;
+      display: flex;
+      justify-content: space-between;
+      gap: 1rem;
+      padding: 0.3rem 0.5rem;
+      border-radius: 6px;
+      font-size: 0.97em;
+      background: none;
+    }
+
+    .detail-item:hover {
+      background-color: var(--hover-bg);
+    }
+
+    .detail-label {
+      color: #888;
+      min-width: 80px;
+      font-weight: 500;
+    }
+
+    .detail-value {
+      color: #222;
+      text-align: right;
+      flex: 1;
+      word-break: break-all;
+    }
+
+    .upstream-link {
+      color: var(--primary);
+      text-decoration: none;
+    }
+
+    .upstream-link:hover {
+      text-decoration: underline;
+      color: #1976d2;
+    }
+
+    .timestamp {
+      font-family: monospace;
+      font-size: 0.93em;
+      color: #555;
+    }
+
+    .footer {
+      margin-top: 3rem;
+      text-align: center;
+      font-size: 0.98em;
+      color: #666;
+      padding: 2rem 0 1rem 0;
+      border-top: 1px solid #eee;
+      background: var(--footer-bg);
+      border-radius: 16px 16px 0 0;
+    }
+
+    .footer p {
+      margin: 0.5rem 0;
+    }
+
+    .footer .nav-link {
+      color: #2196f3;
+    }
+
+    .footer .nav-link:hover {
+      color: #1565c0;
+    }
+
+    @media (max-width: 480px) {
       .container {
-        max-width: 1400px;
-        margin: 0 auto;
-        padding: 2rem;
-      }
-
-      h1 {
-        text-align: center;
-        color: #333;
-        margin-bottom: 2rem;
-        font-size: clamp(1.5rem, 5vw, 2.5rem);
-        position: relative;
-        padding-bottom: 1rem;
-      }
-
-      h1::after {
-        content: "";
-        position: absolute;
-        bottom: 0;
-        left: 50%;
-        transform: translateX(-50%);
-        width: 60px;
-        height: 3px;
-        background: var(--primary);
-        border-radius: 3px;
+        padding: 0.5rem;
       }
 
       .mirror-list {
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
-        gap: 1.5rem;
-        margin-bottom: 3rem;
+        grid-template-columns: 1fr;
+        gap: 1rem;
       }
 
       .mirror-card {
-        background: white;
-        border-radius: 12px;
-        padding: 1.5rem;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-        display: flex;
-        flex-direction: column;
-        gap: 1rem;
-        transition: all 0.3s ease;
-        border: 1px solid transparent;
-      }
-      .mirror-card:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
-        border-color: var(--primary);
-      }
-
-      .mirror-header {
-        display: flex;
-        align-items: center;
-        gap: 1rem;
-        margin-bottom: 0.5rem;
-        flex-wrap: wrap;
-      }
-
-      .mirror-name {
-        font-size: clamp(1.1rem, 4vw, 1.5rem);
-        font-weight: 600;
-        color: #333;
-        flex: 1;
-        min-width: 150px;
-        word-break: break-all;
-        text-decoration: none;
-        transition: color 0.2s ease;
-      }
-
-      .mirror-name:hover {
-        color: var(--primary);
-      }
-
-      .status {
-        display: inline-block;
-        padding: 0.3rem 1rem;
-        border-radius: 20px;
-        font-size: 0.9em;
-        white-space: nowrap;
-        font-weight: 500;
-        transition: transform 0.2s ease;
-      }
-
-      .status:hover {
-        transform: scale(1.05);
-      }
-
-      .status.success {
-        background: var(--success);
-        color: white;
-      }
-
-      .status.syncing {
-        background: var(--syncing);
-        color: black;
-      }
-
-      .status.failed {
-        background: var(--failed);
-        color: white;
+        padding: 1rem;
       }
 
       .detail-item {
-        margin: 0.5rem 0;
-        display: flex;
-        justify-content: space-between;
-        gap: 1rem;
-        padding: 0.5rem;
-        border-radius: 6px;
-        transition: background-color 0.2s ease;
-      }
-
-      .detail-item:hover {
-        background-color: var(--hover-bg);
-      }
-
-      .detail-label {
-        color: #666;
-        font-size: 0.95em;
-        min-width: 80px;
-        font-weight: 500;
+        flex-direction: column;
+        gap: 0.25rem;
       }
 
       .detail-value {
-        color: #333;
-        text-align: right;
-        flex: 1;
-        word-break: break-all;
-        font-size: 0.95em;
+        text-align: left;
       }
 
-      .upstream-link {
-        display: inline-block;
-        max-width: 100%;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        color: var(--primary);
-        text-decoration: none;
-        font-size: 0.95em;
-        transition: color 0.2s ease;
-      }
-
-      .upstream-link:hover {
-        text-decoration: underline;
-        color: #1976d2;
-      }
-
-      .timestamp {
-        font-family: monospace;
-        font-size: 0.9em;
-        color: #555;
+      .status {
+        padding: 0.2rem 0.5rem;
+        font-size: 0.8em;
       }
 
       .footer {
-        margin-top: 3rem;
-        text-align: center;
-        font-size: 0.95em;
-        color: #666;
-        padding: 2rem 0;
-        border-top: 1px solid #eee;
+        font-size: 0.92em;
+        padding: 1.2rem 0 0.5rem 0;
+        border-radius: 12px 12px 0 0;
+      }
+    }
+
+    .category-section {
+      margin: 2rem 0;
+      padding: 1rem;
+      background-color: #f8f9fa;
+      border-radius: 8px;
+    }
+
+    .nav-tabs {
+      margin-bottom: 1rem;
+    }
+
+    h2 {
+      color: #2c3e50;
+      border-bottom: 2px solid #3498db;
+      padding-bottom: 0.5rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .nav-link {
+      font-size: larger;
+      color: #333;
+      transition: background-color 0.2s ease;
+    }
+
+    /* 骨架屏 */
+    .skeleton {
+      background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 37%, #f0f0f0 63%);
+      background-size: 400% 100%;
+      animation: skeleton 1.2s ease-in-out infinite;
+      min-height: 180px;
+      border-radius: var(--card-radius);
+    }
+
+    @keyframes skeleton {
+      0% {
+        background-position: 100% 50%
       }
 
-      .footer p {
-        margin: 0.5rem 0;
+      100% {
+        background-position: 0 50%
       }
+    }
 
-      @media (max-width: 480px) {
-        .container {
-          padding: 1rem;
-        }
+    /* 模态框美化 */
+    .modal-content {
+      border-radius: 18px;
+      box-shadow: 0 8px 32px rgba(33, 150, 243, 0.12);
+    }
 
-        .mirror-list {
-          grid-template-columns: 1fr;
-        }
+    .nav-tabs .nav-link.active {
+      background: var(--primary);
+      color: #fff !important;
+      border-radius: 8px 8px 0 0;
+    }
 
-        .mirror-card {
-          padding: 1rem;
-        }
+    .nav-tabs .nav-link {
+      color: #333;
+      border-radius: 8px 8px 0 0;
+    }
 
-        .detail-item {
-          flex-direction: column;
-          gap: 0.25rem;
-        }
+    .nav-tabs .nav-link:hover {
+      background: #e3f2fd;
+      color: var(--primary);
+    }
 
-        .detail-value {
-          text-align: left;
-        }
+    .tab-content>.tab-pane {
+      background: #f8f9fa;
+      border-radius: 0 0 12px 12px;
+      padding: 1.2rem;
+      margin-top: -1px;
+      border-top: 1px solid #e3eaf1;
+    }
 
-        .status {
-          padding: 0.2rem 0.5rem;
-          font-size: 0.8em;
-        }
-      }
+    .nav-pills .nav-link.active {
+      background: var(--primary);
+      color: #fff;
+    }
 
-      .category-section {
-        margin: 2rem 0;
-        padding: 1rem;
-        background-color: #f8f9fa;
-        border-radius: 8px;
-      }
+    .nav-pills .nav-link {
+      color: #333;
+      border-radius: 8px;
+      margin-bottom: 4px;
+    }
 
-      .nav-tabs {
-        margin-bottom: 1rem;
-      }
+    .nav-pills .nav-link:hover {
+      background: #e3f2fd;
+      color: var(--primary);
+    }
 
-      h2 {
-        color: #2c3e50;
-        border-bottom: 2px solid #3498db;
-        padding-bottom: 0.5rem;
-        margin-bottom: 1.5rem;
-      }
-      .nav-link{
-        font-size: larger;
-        color: #333;
-        transition: background-color 0.2s ease;
-      }
-    </style>
-  </head>
+    body.dark .title {
+      color: #aaa !important;
+    }
+  </style>
+</head>
 
-  <body>
-    <div class="container">
-      <h1>QuickMirrors</h1>
-      <div class="mirror-list" id="mirrorContainer"></div>
-     
-      <div class="download-link">
-        <p class="text-center">常用开源Linux发行版 ISO 和应用软件安装包下载</p>
-        <!-- 触发模态框的按钮 -->
-        <div class="text-center mt-2">
-            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#isoModal">
-                获取安装镜像
-            </button>
-        </div>
-        <!-- 模态框 -->
-        <div class="modal fade" id="isoModal" tabindex="-1" aria-labelledby="isoModalLabel" aria-hidden="true">
-            <div class="modal-dialog modal-lg">
-                <div class="modal-content">
-                    <!-- 模态框头部 -->
-                    <div class="modal-header">
-                        <h4 class="modal-title" id="isoModalLabel">下载</h4>
-                    </div>
-
-                    <!-- 模态框主体 -->
-                    <div class="modal-body">
-                        <!-- 选项卡 -->
-                        <ul class="nav nav-tabs mb-3" id="isoTabs" role="tablist">
-                            <li class="nav-item" role="presentation">
-                                <button class="nav-link active" id="os-tab" data-bs-toggle="tab"
-                                    data-bs-target="#os" type="button" role="tab" aria-controls="os"
-                                    aria-selected="true">操作系统</button>
-                            </li>
-                            <li class="nav-item" role="presentation">
-                                <button class="nav-link" id="app-tab" data-bs-toggle="tab" data-bs-target="#app"
-                                    type="button" role="tab" aria-controls="app"
-                                    aria-selected="false">应用软件</button>
-                            </li>
-                            <li class="nav-item" role="presentation">
-                                <button class="nav-link" id="font-tab" data-bs-toggle="tab"
-                                    data-bs-target="#font" type="button" role="tab" aria-controls="font"
-                                    aria-selected="false">字体</button>
-                            </li>
-                        </ul>
-
-                        <!-- 选项卡内容 -->
-                        <div class="tab-content" id="isoTabsContent">
-                            <!-- 操作系统选项卡 -->
-                            <div class="tab-pane fade show active" id="os" role="tabpanel"
-                                aria-labelledby="os-tab">
-                                <div class="row">
-                                    <!-- 左侧导航栏 -->
-                                    <div class="col-lg-3">
-                                        <ul class="nav nav-pills flex-column" id="osList" role="tablist">
-                                            <!-- 操作系统列表将通过 JavaScript 动态加载 -->
-                                        </ul>
-                                    </div>
-
-                                    <!-- 右侧内容 -->
-                                    <div class="col-lg-9">
-                                        <div class="tab-content" id="osContent">
-                                            <!-- 操作系统内容将通过 JavaScript 动态加载 -->
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- 应用软件选项卡 -->
-                            <div class="tab-pane fade" id="app" role="tabpanel" aria-labelledby="app-tab">
-                                <div class="row">
-                                    <!-- 左侧导航栏 -->
-                                    <div class="col-lg-3">
-                                        <ul class="nav nav-pills flex-column" id="appList" role="tablist">
-                                            <!-- 应用软件列表将通过 JavaScript 动态加载 -->
-                                        </ul>
-                                    </div>
-
-                                    <!-- 右侧内容 -->
-                                    <div class="col-lg-9">
-                                        <div class="tab-content" id="appContent">
-                                            <!-- 应用软件内容将通过 JavaScript 动态加载 -->
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- 字体选项卡 -->
-                            <div class="tab-pane fade" id="font" role="tabpanel" aria-labelledby="font-tab">
-                                <div class="row">
-                                    <!-- 左侧导航栏 -->
-                                    <div class="col-lg-3">
-                                        <ul class="nav nav-pills flex-column" id="fontList" role="tablist">
-                                            <!-- 字体列表将通过 JavaScript 动态加载 -->
-                                        </ul>
-                                    </div>
-
-                                    <!-- 右侧内容 -->
-                                    <div class="col-lg-9">
-                                        <div class="tab-content" id="fontContent">
-                                            <!-- 字体内容将通过 JavaScript 动态加载 -->
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                   
-                </div>
-            </div>
-        </div>
+<body>
+  <!-- 顶部LOGO和副标题 -->
+  <nav class="navbar navbar-light bg-white shadow-sm mb-4" style="border-radius:0 0 16px 16px;">
+    <div class="container d-flex align-items-center justify-content-between py-2">
+      <div class="d-flex align-items-center gap-2">
+        <!-- <img src="https://cdn.jsdelivr.net/gh/muzihuaner/mirrors@main/logo.svg" alt="logo"
+          style="height:40px;width:40px;"> -->
+        <span class="fs-4 fw-bold text-primary">快点开源软件镜像站</span>
+      </div>
+      <button id="darkModeToggle" class="btn btn-outline-secondary btn-sm rounded-pill">🌙 深色模式</button>
     </div>
-      
-      <div class="footer">
-        <ul class="nav justify-content-center">
-          <li class="nav-item">
-            <a class="nav-link" href="https://help.mirrorz.org">使用帮助</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="https://mirrors.cernet.edu.cn/">Mirrorz</a>
-          </li>
-          <li class="nav-item thuhidden">
-            <a
-              class="nav-link"
-              href="https://github.com/muzihuaner/mirrors/issues"
-              >提个issues？！</a
-            >
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="https://github.com/tuna/tunasync"
-              >镜像管理器源码</a
-            >
-          </li>
-          <li class="nav-item">
-            <a
-              class="nav-link"
-              href="https://github.com/muzihuaner/mirrors"
-              >网页源码</a
-            >
-          </li>
-        </ul>
-        <p class="text-center thuhidden">
-          本镜像站为学生、技术爱好者、工程师、科研人员等开源爱好者提供开源软件镜像服务.
-        </p>
-        <p class="text-center thuhidden">
-          根据相关法律法规，本站不对欧盟用户提供服务。
-        </p>
-        <p class="text-center thuhidden">本站由<a href="https://huangetech.github.io" style="color: #333;">HuanGeTech</a>运行维护。</p>
+  </nav>
+  <div class="container">
+    <!-- <h1 class="mb-1">快点开源软件镜像站</h1> -->
+    <div class="text-center text-muted mb-4 title">为国内用户提供高质量开源软件镜像与Linux发行版ISO下载</div>
+    <!-- 镜像卡片骨架屏 -->
+    <div id="mirrorSkeleton" class="mirror-list mb-3">
+      <div class="mirror-card skeleton"></div>
+      <div class="mirror-card skeleton"></div>
+      <div class="mirror-card skeleton"></div>
+    </div>
+    <div class="mirror-list" id="mirrorContainer" style="display:none;"></div>
+
+    <div class="download-link">
+      <p class="text-center">常用开源Linux发行版 ISO 和应用软件安装包下载</p>
+      <!-- 触发模态框的按钮 -->
+      <div class="text-center mt-2">
+        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#isoModal">
+          获取安装镜像
+        </button>
+      </div>
+      <!-- 模态框 -->
+      <div class="modal fade" id="isoModal" tabindex="-1" aria-labelledby="isoModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+          <div class="modal-content">
+            <!-- 模态框头部 -->
+            <div class="modal-header">
+              <h4 class="modal-title" id="isoModalLabel">下载</h4>
+            </div>
+
+            <!-- 模态框主体 -->
+            <div class="modal-body">
+              <!-- 选项卡 -->
+              <ul class="nav nav-tabs mb-3" id="isoTabs" role="tablist">
+                <li class="nav-item" role="presentation">
+                  <button class="nav-link active" id="os-tab" data-bs-toggle="tab" data-bs-target="#os" type="button"
+                    role="tab" aria-controls="os" aria-selected="true">操作系统</button>
+                </li>
+                <li class="nav-item" role="presentation">
+                  <button class="nav-link" id="app-tab" data-bs-toggle="tab" data-bs-target="#app" type="button"
+                    role="tab" aria-controls="app" aria-selected="false">应用软件</button>
+                </li>
+                <li class="nav-item" role="presentation">
+                  <button class="nav-link" id="font-tab" data-bs-toggle="tab" data-bs-target="#font" type="button"
+                    role="tab" aria-controls="font" aria-selected="false">字体</button>
+                </li>
+              </ul>
+
+              <!-- 选项卡内容 -->
+              <div class="tab-content" id="isoTabsContent">
+                <!-- 操作系统选项卡 -->
+                <div class="tab-pane fade show active" id="os" role="tabpanel" aria-labelledby="os-tab">
+                  <div class="row">
+                    <!-- 左侧导航栏 -->
+                    <div class="col-lg-3">
+                      <ul class="nav nav-pills flex-column" id="osList" role="tablist">
+                        <!-- 操作系统列表将通过 JavaScript 动态加载 -->
+                      </ul>
+                    </div>
+
+                    <!-- 右侧内容 -->
+                    <div class="col-lg-9">
+                      <div class="tab-content" id="osContent">
+                        <!-- 操作系统内容将通过 JavaScript 动态加载 -->
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- 应用软件选项卡 -->
+                <div class="tab-pane fade" id="app" role="tabpanel" aria-labelledby="app-tab">
+                  <div class="row">
+                    <!-- 左侧导航栏 -->
+                    <div class="col-lg-3">
+                      <ul class="nav nav-pills flex-column" id="appList" role="tablist">
+                        <!-- 应用软件列表将通过 JavaScript 动态加载 -->
+                      </ul>
+                    </div>
+
+                    <!-- 右侧内容 -->
+                    <div class="col-lg-9">
+                      <div class="tab-content" id="appContent">
+                        <!-- 应用软件内容将通过 JavaScript 动态加载 -->
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- 字体选项卡 -->
+                <div class="tab-pane fade" id="font" role="tabpanel" aria-labelledby="font-tab">
+                  <div class="row">
+                    <!-- 左侧导航栏 -->
+                    <div class="col-lg-3">
+                      <ul class="nav nav-pills flex-column" id="fontList" role="tablist">
+                        <!-- 字体列表将通过 JavaScript 动态加载 -->
+                      </ul>
+                    </div>
+
+                    <!-- 右侧内容 -->
+                    <div class="col-lg-9">
+                      <div class="tab-content" id="fontContent">
+                        <!-- 字体内容将通过 JavaScript 动态加载 -->
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+
+          </div>
+        </div>
       </div>
     </div>
 
-    <script>
-      // 时间格式化函数
-      const formatTime = (timestamp) => {
-        if (timestamp <= 0) return "N/A";
+    <div class="footer">
+      <ul class="nav justify-content-center">
+        <li class="nav-item">
+          <a class="nav-link" href="https://help.mirrorz.org">使用帮助</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="https://mirrors.cernet.edu.cn/">Mirrorz</a>
+        </li>
+        <li class="nav-item thuhidden">
+          <a class="nav-link" href="https://github.com/muzihuaner/mirrors/issues">提个issues？！</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="https://github.com/tuna/tunasync">镜像管理器源码</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="https://github.com/muzihuaner/mirrors">网页源码</a>
+        </li>
+      </ul>
+      <p class="text-center thuhidden">
+        本镜像站为学生、技术爱好者、工程师、科研人员等开源爱好者提供开源软件镜像服务.
+      </p>
+      <p class="text-center thuhidden">
+        根据相关法律法规，本站不对欧盟用户提供服务。
+      </p>
+      <p class="text-center thuhidden">本站由<a href="https://huangetech.github.io"
+          style="color: #333;">HuanGeTech</a>运行维护。</p>
+    </div>
+  </div>
 
-        const date = new Date(timestamp * 1000);
-        return (
-          date.toLocaleString("zh-CN", {
-            year: "numeric",
-            month: "2-digit",
-            day: "2-digit",
-            hour: "2-digit",
-            minute: "2-digit",
-            timeZone: "UTC",
-          }) + " UTC"
-        );
+  <script>
+    // 时间格式化函数
+    const formatTime = (timestamp) => {
+      if (timestamp <= 0) return "N/A";
+
+      const date = new Date(timestamp * 1000);
+      return (
+        date.toLocaleString("zh-CN", {
+          year: "numeric",
+          month: "2-digit",
+          day: "2-digit",
+          hour: "2-digit",
+          minute: "2-digit",
+          timeZone: "UTC",
+        }) + " UTC"
+      );
+    };
+
+    // 深色模式切换
+    const darkBtn = document.getElementById('darkModeToggle');
+    darkBtn.onclick = function () {
+      document.body.classList.toggle('dark');
+      if (document.body.classList.contains('dark')) {
+        darkBtn.innerText = '☀️ 亮色模式';
+      } else {
+        darkBtn.innerText = '🌙 深色模式';
+      }
+    };
+    // 镜像卡片骨架屏逻辑
+    function showSkeleton(show) {
+      document.getElementById('mirrorSkeleton').style.display = show ? '' : 'none';
+      document.getElementById('mirrorContainer').style.display = show ? 'none' : '';
+    }
+
+    // 创建卡片元素（增加图标）
+    const createMirrorCard = (mirror) => {
+      const card = document.createElement("div");
+      card.className = "mirror-card";
+      // 头部信息
+      const header = document.createElement("div");
+      header.className = "mirror-header";
+      // 镜像图标（首字母）
+      const icon = document.createElement("div");
+      icon.className = "mirror-icon";
+      icon.textContent = mirror.name[0].toUpperCase();
+      header.appendChild(icon);
+      // 镜像名称
+      const name = document.createElement("a");
+      name.className = "mirror-name";
+      name.href = `/${mirror.name}`;
+      name.textContent = mirror.name;
+      name.target = "_blank";
+      header.appendChild(name);
+      // 状态标签
+      const status = document.createElement("div");
+      status.className = `status ${mirror.status}`;
+      status.textContent = mirror.status.toUpperCase();
+      header.appendChild(status);
+      card.appendChild(header);
+      // 详细信息
+      const createDetailItem = (label, value) => {
+        const div = document.createElement("div");
+        div.className = "detail-item";
+        div.innerHTML = `
+            <span class="detail-label">${label}</span>
+            <span class="detail-value">${value}</span>
+          `;
+        return div;
       };
+      // 上游地址处理
+      const upstreamDisplay = mirror.upstream.startsWith("http")
+        ? `<a class="upstream-link" href="${mirror.upstream}" target="_blank" title="${mirror.upstream}">${mirror.upstream}</a>`
+        : `<span class="upstream-link" title="${mirror.upstream}">${mirror.upstream}</span>`;
+      card.appendChild(createDetailItem("数据大小", mirror.size === "unknown" ? "未知" : mirror.size));
+      card.appendChild(createDetailItem("上游地址", upstreamDisplay));
+      card.appendChild(createDetailItem("最后同步", `<span class="timestamp">${formatTime(mirror.last_ended_ts)}</span>`));
+      card.appendChild(createDetailItem("下次计划", `<span class="timestamp">${formatTime(mirror.next_schedule_ts)}</span>`));
+      return card;
+    };
+    // 获取并更新数据（骨架屏逻辑）
+    const updateData = async () => {
+      showSkeleton(true);
+      try {
+        const response = await fetch("jobs.json");
+        const data = await response.json();
+        const container = document.getElementById("mirrorContainer");
+        container.innerHTML = "";
+        data.forEach((mirror) => {
+          container.appendChild(createMirrorCard(mirror));
+        });
+        showSkeleton(false);
+      } catch (error) {
+        showSkeleton(false);
+        console.error("数据加载失败:", error);
+      }
+    };
+    // 初始加载
+    updateData();
+    setInterval(updateData, 30000);
+  </script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      // 获取 DOM 元素
+      const osList = document.getElementById('osList');
+      const osContent = document.getElementById('osContent');
+      const appList = document.getElementById('appList');
+      const appContent = document.getElementById('appContent');
+      const fontList = document.getElementById('fontList');
+      const fontContent = document.getElementById('fontContent');
 
-      // 创建卡片元素
-      const createMirrorCard = (mirror) => {
-        const card = document.createElement("div");
-        card.className = "mirror-card";
+      // 从 isoinfo.json 获取数据
+      fetch('isoinfo.json')
+        .then(response => response.json())
+        .then(data => {
+          // 按分类分组
+          const categories = {
+            os: [],
+            app: [],
+            font: []
+          };
 
-        // 头部信息
-        const header = document.createElement("div");
-        header.className = "mirror-header";
-
-        // 镜像名称（可点击链接）
-        const name = document.createElement("a"); // 改为 <a> 标签
-        name.className = "mirror-name";
-        name.href = `/${mirror.name}`; // 指向镜像目录
-        name.textContent = mirror.name;
-        name.target = "_blank"; // 在新标签页打开
-        header.appendChild(name);
-
-        // 状态标签
-        const status = document.createElement("div");
-        status.className = `status ${mirror.status}`;
-        status.textContent = mirror.status.toUpperCase();
-        header.appendChild(status);
-
-        card.appendChild(header);
-
-        // 详细信息
-        const createDetailItem = (label, value) => {
-          const div = document.createElement("div");
-          div.className = "detail-item";
-          div.innerHTML = `
-                    <span class="detail-label">${label}</span>
-                    <span class="detail-value">${value}</span>
-                `;
-          return div;
-        };
-
-        // 上游地址处理
-        const upstreamDisplay = mirror.upstream.startsWith("http")
-          ? `<a class="upstream-link" href="${mirror.upstream}" target="_blank" title="${mirror.upstream}">${mirror.upstream}</a>`
-          : `<span class="upstream-link" title="${mirror.upstream}">${mirror.upstream}</span>`;
-
-        card.appendChild(
-          createDetailItem(
-            "数据大小",
-            mirror.size === "unknown" ? "未知" : mirror.size
-          )
-        );
-        card.appendChild(createDetailItem("上游地址", upstreamDisplay));
-        card.appendChild(
-          createDetailItem(
-            "最后同步",
-            `<span class="timestamp">${formatTime(mirror.last_ended_ts)}</span>`
-          )
-        );
-        card.appendChild(
-          createDetailItem(
-            "下次计划",
-            `<span class="timestamp">${formatTime(
-              mirror.next_schedule_ts
-            )}</span>`
-          )
-        );
-
-        return card;
-      };
-
-      // 获取并更新数据
-      const updateData = async () => {
-        try {
-          const response = await fetch("jobs.json");
-          const data = await response.json();
-
-          const container = document.getElementById("mirrorContainer");
-          container.innerHTML = "";
-          data.forEach((mirror) => {
-            container.appendChild(createMirrorCard(mirror));
+          data.forEach(item => {
+            if (categories[item.category]) {
+              categories[item.category].push(item);
+            }
           });
-        } catch (error) {
-          console.error("数据加载失败:", error);
+
+          // 按字母顺序排序
+          categories.os.sort((a, b) => a.distro.localeCompare(b.distro));
+          categories.app.sort((a, b) => a.distro.localeCompare(b.distro));
+          categories.font.sort((a, b) => a.distro.localeCompare(b.distro));
+
+          // 动态生成操作系统导航栏和内容
+          generateCategoryContent(categories.os, osList, osContent, 'os');
+          // 动态生成应用软件导航栏和内容
+          generateCategoryContent(categories.app, appList, appContent, 'app');
+          // 动态生成字体导航栏和内容
+          generateCategoryContent(categories.font, fontList, fontContent, 'font');
+        })
+        .catch(error => {
+          console.error('Error fetching isoinfo.json:', error);
+          osContent.innerHTML = '<p>无法加载数据，请稍后重试。</p>';
+        });
+
+      /**
+       * 动态生成分类内容
+       * @param {Array} data - 分类数据
+       * @param {HTMLElement} navList - 导航栏容器
+       * @param {HTMLElement} content - 内容容器
+       * @param {string} prefix - 分类前缀（os、app、font）
+       */
+      function generateCategoryContent(data, navList, content, prefix) {
+        if (data.length === 0) {
+          content.innerHTML = `<p>暂无${prefix === 'os' ? '操作系统' : prefix === 'app' ? '应用软件' : '字体'}数据。</p>`;
+          return;
         }
-      };
 
-      // 初始加载
-      updateData();
-      // 每30秒自动刷新
-      setInterval(updateData, 30000);
-    </script>
-    <script>
-      document.addEventListener('DOMContentLoaded', function () {
-          // 获取 DOM 元素
-          const osList = document.getElementById('osList');
-          const osContent = document.getElementById('osContent');
-          const appList = document.getElementById('appList');
-          const appContent = document.getElementById('appContent');
-          const fontList = document.getElementById('fontList');
-          const fontContent = document.getElementById('fontContent');
+        data.forEach((item, index) => {
+          // 生成导航栏
+          const navItem = document.createElement('li');
+          navItem.classList.add('nav-item');
+          navItem.setAttribute('role', 'presentation');
 
-          // 从 isoinfo.json 获取数据
-          fetch('isoinfo.json')
-              .then(response => response.json())
-              .then(data => {
-                  // 按分类分组
-                  const categories = {
-                      os: [],
-                      app: [],
-                      font: []
-                  };
+          const navLink = document.createElement('button');
+          navLink.classList.add('nav-link');
+          navLink.id = `${prefix}-${index}-tab`;
+          navLink.setAttribute('data-bs-toggle', 'pill');
+          navLink.setAttribute('data-bs-target', `#${prefix}-${index}`);
+          navLink.setAttribute('type', 'button');
+          navLink.setAttribute('role', 'tab');
+          navLink.setAttribute('aria-controls', `${prefix}-${index}`);
+          navLink.setAttribute('aria-selected', index === 0 ? 'true' : 'false');
+          navLink.textContent = item.distro;
 
-                  data.forEach(item => {
-                      if (categories[item.category]) {
-                          categories[item.category].push(item);
-                      }
-                  });
+          navItem.appendChild(navLink);
+          navList.appendChild(navItem);
 
-                  // 按字母顺序排序
-                  categories.os.sort((a, b) => a.distro.localeCompare(b.distro));
-                  categories.app.sort((a, b) => a.distro.localeCompare(b.distro));
-                  categories.font.sort((a, b) => a.distro.localeCompare(b.distro));
+          // 生成内容
+          const tabPane = document.createElement('div');
+          tabPane.classList.add('tab-pane', 'fade');
+          tabPane.id = `${prefix}-${index}`;
+          tabPane.setAttribute('role', 'tabpanel');
+          tabPane.setAttribute('aria-labelledby', `${prefix}-${index}-tab`);
 
-                  // 动态生成操作系统导航栏和内容
-                  generateCategoryContent(categories.os, osList, osContent, 'os');
-                  // 动态生成应用软件导航栏和内容
-                  generateCategoryContent(categories.app, appList, appContent, 'app');
-                  // 动态生成字体导航栏和内容
-                  generateCategoryContent(categories.font, fontList, fontContent, 'font');
-              })
-              .catch(error => {
-                  console.error('Error fetching isoinfo.json:', error);
-                  osContent.innerHTML = '<p>无法加载数据，请稍后重试。</p>';
-              });
+          const title = document.createElement('h3');
+          title.textContent = item.distro;
+          tabPane.appendChild(title);
 
-          /**
-           * 动态生成分类内容
-           * @param {Array} data - 分类数据
-           * @param {HTMLElement} navList - 导航栏容器
-           * @param {HTMLElement} content - 内容容器
-           * @param {string} prefix - 分类前缀（os、app、font）
-           */
-          function generateCategoryContent(data, navList, content, prefix) {
-              if (data.length === 0) {
-                  content.innerHTML = `<p>暂无${prefix === 'os' ? '操作系统' : prefix === 'app' ? '应用软件' : '字体'}数据。</p>`;
-                  return;
-              }
+          const isoList = document.createElement('ul');
+          item.urls.forEach(iso => {
+            const isoItem = document.createElement('li');
+            const isoLink = document.createElement('a');
+            isoLink.href = 'https://mirrors.tuna.tsinghua.edu.cn' + iso.url;
+            isoLink.textContent = iso.name;
+            isoItem.appendChild(isoLink);
+            isoList.appendChild(isoItem);
+          });
+          tabPane.appendChild(isoList);
 
-              data.forEach((item, index) => {
-                  // 生成导航栏
-                  const navItem = document.createElement('li');
-                  navItem.classList.add('nav-item');
-                  navItem.setAttribute('role', 'presentation');
+          content.appendChild(tabPane);
 
-                  const navLink = document.createElement('button');
-                  navLink.classList.add('nav-link');
-                  navLink.id = `${prefix}-${index}-tab`;
-                  navLink.setAttribute('data-bs-toggle', 'pill');
-                  navLink.setAttribute('data-bs-target', `#${prefix}-${index}`);
-                  navLink.setAttribute('type', 'button');
-                  navLink.setAttribute('role', 'tab');
-                  navLink.setAttribute('aria-controls', `${prefix}-${index}`);
-                  navLink.setAttribute('aria-selected', index === 0 ? 'true' : 'false');
-                  navLink.textContent = item.distro;
-
-                  navItem.appendChild(navLink);
-                  navList.appendChild(navItem);
-
-                  // 生成内容
-                  const tabPane = document.createElement('div');
-                  tabPane.classList.add('tab-pane', 'fade');
-                  tabPane.id = `${prefix}-${index}`;
-                  tabPane.setAttribute('role', 'tabpanel');
-                  tabPane.setAttribute('aria-labelledby', `${prefix}-${index}-tab`);
-
-                  const title = document.createElement('h3');
-                  title.textContent = item.distro;
-                  tabPane.appendChild(title);
-
-                  const isoList = document.createElement('ul');
-                  item.urls.forEach(iso => {
-                      const isoItem = document.createElement('li');
-                      const isoLink = document.createElement('a');
-                      isoLink.href = 'https://mirrors.tuna.tsinghua.edu.cn' + iso.url;
-                      isoLink.textContent = iso.name;
-                      isoItem.appendChild(isoLink);
-                      isoList.appendChild(isoItem);
-                  });
-                  tabPane.appendChild(isoList);
-
-                  content.appendChild(tabPane);
-
-                  // 默认激活第一个
-                  if (index === 0) {
-                      navLink.classList.add('active');
-                      tabPane.classList.add('show', 'active');
-                  }
-              });
+          // 默认激活第一个
+          if (index === 0) {
+            navLink.classList.add('active');
+            tabPane.classList.add('show', 'active');
           }
-      });
+        });
+      }
+    });
   </script>
 
-    <!-- Bootstrap JS and dependencies -->
-    <script src="https://cdn.jsdmirror.com/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
-    <script src="https://cdn.jsdmirror.com/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js"></script>
-    <!-- jQuery library -->
-    <script src="https://cdnjs.loli.net/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-  </body>
+  <!-- Bootstrap JS and dependencies -->
+  <script src="https://cdn.jsdmirror.com/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+  <script src="https://cdn.jsdmirror.com/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js"></script>
+  <!-- jQuery library -->
+  <script src="https://cdnjs.loli.net/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+</body>
+
 </html>
