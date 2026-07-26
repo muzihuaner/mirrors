@@ -1,5 +1,5 @@
 [
-    "topjohnwu/Magisk",
+    "ip7z/7zip",
     "ventoy/Ventoy",
     "rustdesk/rustdesk",
     "LANDrop/LANDrop",
@@ -9,5 +9,8 @@
     "obsproject/obs-studio",
     "pbatard/rufus",
     "M2Team/NanaZip",
-    "rclone/rclone"
+    "ungoogled-software/ungoogled-chromium-windows",
+    "jqssun/android-helium-browser",
+    "rclone/rclone",
+    "kiwibrowser/src.next"
 ]
